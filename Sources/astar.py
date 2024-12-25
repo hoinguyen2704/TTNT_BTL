@@ -5,7 +5,6 @@ import support_function as spf
 
 
 def AStart_Search(board, list_check_point):
-    #
     start_time = time.time()
     if spf.check_win(board, list_check_point):
         print("Found win")  # ???????

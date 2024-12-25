@@ -128,7 +128,7 @@ loading = False
 
 def sokoban():
     running = True
-    global sceneState  # biến tham chiếu
+    global sceneState, list_check_point  # biến tham chiếu
     global loading
     global algorithm
     global list_board
@@ -173,7 +173,7 @@ def sokoban():
         if sceneState == "playing":
 
             clock.tick(4)
-            if (algorithm == "Player"):
+            if algorithm == "Player":
                 new_list_board = player.Player(list_board, list_check_point, pygame)
                 list_board = new_list_board
                 if np.all(list_board == True):
@@ -184,7 +184,7 @@ def sokoban():
                     renderMap(list_board)
                     list_board_win = list_board
 
-            if (algorithm == "AI"):
+            if algorithm == "AI":
                 renderMap(list_board[0][currentState])
                 currentState = currentState + 1
             if currentState == stateLenght:
@@ -281,14 +281,14 @@ def foundGame(map):
     renderMap(map)
 
 
-'''
-def notfoundGame():
+
+def notfoundGame(notfound_background=None):
     screen.blit(notfound_background, (0, 0))
     font_2 = pygame.font.Font('gameFont.ttf', 20)
     text_2 = font_2.render('Press Enter to continue.', True, WHITE)
     text_rect_2 = text_2.get_rect(center=(320, 600))
     screen.blit(text_2, text_rect_2)
-'''
+
 
 
 def main():

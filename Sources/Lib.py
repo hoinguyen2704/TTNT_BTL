@@ -1,4 +1,6 @@
 # List of required libraries
+from IPython import get_ipython
+
 required_libraries = ['numpy', 'pygame', 'sys', 'queue', 'copy']
 
 
