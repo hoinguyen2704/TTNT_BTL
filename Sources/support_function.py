@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-TIME_OUT = 180
+TIME_OUT = 400
 '''
 //========================//
 //        SUPPORTING      //
@@ -16,9 +16,10 @@ class state:
     def __init__(self, board, state_parent, list_check_point):
         '''storage current board and state parent of this state'''
         self.board = board
-        self.state_parent = state_parent
+        self.state_parent = state_parent #Trạng thái bảng cha
         self.cost = 1
-        self.heuristic = 0
+        self.heuristic = 0 #Thiết lập giá trị heuristic ban đầu là 0.
+        #Sao chép sâu danh sách các điểm kiểm tra để lưu trữ trong đối tượng.
         self.check_points = deepcopy(list_check_point)
 
     ''' HÀM ĐỆ QUY ĐỂ QUAY LẠI VỀ ĐẦU TIÊN NẾU TRẠNG THÁI HIỆN TẠI LÀ MỤC TIÊU '''
@@ -28,27 +29,41 @@ class state:
     def get_line(self):
         if self.state_parent is None:
             return [self.board]
+        #   Nếu self.state_parent là None (tức là trạng thái hiện tại là trạng thái bắt đầu),
+        #   trả về danh sách chỉ chứa bảng hiện tại.
         return (self.state_parent).get_line() + [self.board]
+        # Gọi phương thức get_line trên trạng thái cha và nối bảng hiện tại vào danh sách kết quả.
 
     ''' TÍNH TOÁN HÀM HEURISTIC ĐƯỢC SỬ DỤNG CHO THUẬT TOÁN A* '''
 
     def compute_heuristic(self):
+        # Tìm vị trí của các hộp trong bảng hiện tại.
         list_boxes = find_boxes_position(self.board)
         if self.heuristic == 0:
+            #Nếu giá trị heuristic hiện tại là 0,
+            # tính toán giá trị heuristic bằng cách cộng chi phí di chuyển và
+            # tổng khoảng cách Manhattan từ mỗi hộp tới điểm kiểm tra tương ứng.
             self.heuristic = self.cost + abs(sum(
                 list_boxes[i][0] + list_boxes[i][1] - self.check_points[i][0] - self.check_points[i][1] for i in
                 range(len(list_boxes))))
+        #Trả về giá trị heuristic đã được tính toán.
         return self.heuristic
 
     ''' HOẠT ĐỘNG QUÁ TẢI RẰNG CHO PHÉP CÁC BANG ĐƯỢC LƯU TRỮ TRONG HÀNG ƯU TIÊN '''
 
     def __gt__(self, other):
+        #định nghĩa toán tử > để so sánh giá trị heuristic của trạng thái hiện tại
+        # với trạng thái khác. Nếu giá trị heuristic của trạng thái hiện tại lớn hơn,
+        # trả về True, ngược lại trả về False.
         if self.compute_heuristic() > other.compute_heuristic():
             return True
         else:
             return False
 
     def __lt__(self, other):
+        #định nghĩa toán tử < để so sánh giá trị heuristic của trạng thái hiện tại
+        # với trạng thái khác. Nếu giá trị heuristic của trạng thái hiện tại nhỏ hơn,
+        # trả về True, ngược lại trả về False.
         if self.compute_heuristic() < other.compute_heuristic():
             return True
         else:
@@ -57,7 +72,6 @@ class state:
 
 ''' KIỂM TRA BAN CÓ MỤC TIÊU HAY KHÔNG '''
 '''trả về true nếu tất cả các điểm kiểm tra được bao phủ bởi các hộp'''
-
 
 def check_win(board, list_check_point):
     for p in list_check_point:
@@ -158,9 +172,11 @@ def check_in_corner(board, x, y, list_check_point):
 
 
 def find_boxes_position(board):
+    #board, đại diện cho bảng trò chơi hiện tại.
     result = []
     for i in range(len(board)):
         for j in range(len(board[0])):
+            #Kiểm tra nếu phần tử tại vị trí (i, j) trong bảng là hộp ($).
             if board[i][j] == '$':
                 result.append((i, j))  # ktra vị trí đã đúng hay chưa
     return result
@@ -196,6 +212,7 @@ def is_box_can_be_moved(board, box_position):
 
 
 def is_all_boxes_stuck(board, list_check_point):
+    #tìm tất cả các vị trí của các hộp ($) trên bảng và lưu trữ vào box_positions.
     box_positions = find_boxes_position(board)
     result = True
     for box_position in box_positions:
@@ -207,8 +224,6 @@ def is_all_boxes_stuck(board, list_check_point):
 
 
 ''' KIỂM TRA XEM CÓ ÍT NHẤT MỘT HỘP CÓ BỊ KHÓC Ở GÓC không'''
-
-
 def is_board_can_not_win(board, list_check_point):
     '''trả về true nếu hộp ở góc tường -> không thể thắng'''
     # nếu hộp đẩy vào góc tường thì k đi đc nữa-> false
